@@ -9,7 +9,9 @@ manifest:
       remote: zephyr
       repo-path: zephyr
       revision: main
+      import: true
       import:
         name-allowlist:
           - cmsis
           - hal_stm32
+          - hal_espressif

@@ -11,6 +11,7 @@ RUN apt-get update && \
     wget \
     xz-utils \
     git \
+    ssh \
     cmake \
     ninja-build \
     gperf \
@@ -32,26 +33,32 @@ RUN apt-get update && \
     apt-get clean
 
 RUN cd && \
-    wget --no-check-certificate https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.8/zephyr-sdk-0.16.8_linux-x86_64_minimal.tar.xz && \
-    tar xf zephyr-sdk-0.16.8_linux-x86_64_minimal.tar.xz && \
-    rm zephyr-sdk-0.16.8_linux-x86_64_minimal.tar.xz && \
-    cd zephyr-sdk-0.16.8 && \
-    wget --no-check-certificate https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.8/toolchain_linux-x86_64_arm-zephyr-eabi.tar.xz && \
+    wget --no-check-certificate https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/zephyr-sdk-0.17.0_linux-x86_64_minimal.tar.xz && \
+    tar xf zephyr-sdk-0.17.0_linux-x86_64_minimal.tar.xz && \
+    rm zephyr-sdk-0.17.0_linux-x86_64_minimal.tar.xz && \
+    cd zephyr-sdk-0.17.0 && \
+    wget --no-check-certificate https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/toolchain_linux-x86_64_arm-zephyr-eabi.tar.xz && \
     tar xf toolchain_linux-x86_64_arm-zephyr-eabi.tar.xz && \
     rm toolchain_linux-x86_64_arm-zephyr-eabi.tar.xz && \
+    wget --no-check-certificate https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/toolchain_linux-x86_64_xtensa-espressif_esp32_zephyr-elf.tar.xz && \
+    tar xf toolchain_linux-x86_64_xtensa-espressif_esp32_zephyr-elf.tar.xz && \
+    rm toolchain_linux-x86_64_xtensa-espressif_esp32_zephyr-elf.tar.xz && \
+    wget --no-check-certificate https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/toolchain_linux-x86_64_xtensa-espressif_esp32s3_zephyr-elf.tar.xz && \
+    tar xf toolchain_linux-x86_64_xtensa-espressif_esp32s3_zephyr-elf.tar.xz && \
+    rm toolchain_linux-x86_64_xtensa-espressif_esp32s3_zephyr-elf.tar.xz && \
     mkdir ~/zephyrproject && \
     mkdir ~/zephyrproject/local_repo
 
 COPY ./share/west.yml /root/zephyrproject/local_repo
-    
-RUN pip3 install --upgrade west && \
-    echo 'export PATH=~/.local/bin/:"$PATH"' >> ~/.bashrc && \
-    . ~/.bashrc
 
-RUN west init -l --mf west.yml ~/zephyrproject/local_repo/ && \
+RUN pip install --break-system-packages --user west && \
+    echo 'export PATH=~/.local/bin/:"$PATH"' >> ~/.bashrc && \
+    . ~/.bashrc && \
+    ~/.local/bin/west init -l --mf west.yml ~/zephyrproject/local_repo/ && \
     cd ~/zephyrproject/ && \
-    west update && \
-    west zephyr-export && \
-    pip3 install --user -r ~/zephyrproject/zephyr/scripts/requirements.txt
-    
+    ~/.local/bin/west update && \
+    ~/.local/bin/west zephyr-export
+
+RUN pip install --break-system-packages --user -r ~/zephyrproject/zephyr/scripts/requirements.txt
+
 CMD bash 
